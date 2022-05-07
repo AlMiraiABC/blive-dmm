@@ -1,0 +1,83 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "bilibili-live-dm-manager config schema.",
+    "description": "Schama for bilibili-live-dm-manager's config.json",
+    "type": "object",
+    "properties": {
+        "room": {
+            "type": "object",
+            "description": "直播间",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "直播间房间号"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "credential": {
+            "type": "object",
+            "description": "登录身份认证, 登陆后从cookie获取",
+            "properties": {
+                "buvid3": {
+                    "type": "string",
+                    "description": "buvid3"
+                },
+                "sessdata": {
+                    "type": "string",
+                    "description": "SESSDATA"
+                },
+                "bili_jct": {
+                    "type": "string",
+                    "description": "bili_jct"
+                }
+            },
+            "required": [
+                "buvid3",
+                "sessdata",
+                "bili_jct"
+            ]
+        },
+        "danmaku": {
+            "type": "object",
+            "description": "弹幕设置",
+            "properties": {
+                "style": {
+                    "type": "object",
+                    "description": "弹幕样式设置",
+                    "properties": {
+                        "color": {
+                            "type": "integer"
+                        },
+                        "mode": {
+                            "type": "integer"
+                        },
+                        "fontsize": {
+                            "type": "integer"
+                        }
+                    }
+                }
+            }
+        },
+        "reply": {
+            "type": "object",
+            "description": "自动回复",
+            "properties": {
+                "visit": {
+                    "type": "string",
+                    "description": "游客进入直播间"
+                },
+                "gift": {
+                    "type": "string",
+                    "description": "收到礼物"
+                }
+            }
+        }
+    },
+    "required": [
+        "room",
+        "credential"
+    ]
+}
