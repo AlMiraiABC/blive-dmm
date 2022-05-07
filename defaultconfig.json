@@ -1,0 +1,21 @@
+{
+    "room": {
+        "id": 0
+    },
+    "credential": {
+        "buvid3": "",
+        "sessdata": "",
+        "bili_jct": ""
+    },
+    "danmaku": {
+        "style": {
+            "color": 16777215,
+            "mode": 1,
+            "fontsize": 25
+        }
+    },
+    "reply": {
+        "visit": "欢迎${username}光临${roomname}",
+        "gift": "感谢${username}赠送的${giftnum}个${giftname}"
+    }
+}
