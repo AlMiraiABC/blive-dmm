@@ -1,26 +1,22 @@
+import asyncio
 import json
 import os
 from tempfile import mkstemp
-from unittest import IsolatedAsyncioTestCase, skipIf
+from unittest import IsolatedAsyncioTestCase
 
 from manager.config import Config
 from manager.danmaku import Danmaku
 
-"""
-NOTE: UPDATE CONFIG BEFORE TESTING.
-"""
 CONFIG = {
     "room": {
-        "id": 7441943
+        "id": os.environ.get("BLDM_ROOM_ID")
     },
     "credential": {
-        "buvid3": "45D4111E-FD6B-5590-1F82-331BAFC4E5DE14331infoc",
-        "sessdata": "04bb406b%2C1667457161%2C2b200*51",
-        "bili_jct": "fa1d1a08fd208116f49826c62a9b4e7d"
+        "buvid3": os.environ.get('BLDM_BUVID3'),
+        "sessdata": os.environ.get('BLDM_SESSDATA'),
+        "bili_jct": os.environ.get('BLDM_BILI_JCT')
     }
 }
-
-START_LIVE = False
 
 
 class TestDanmaku(IsolatedAsyncioTestCase):
@@ -37,7 +33,11 @@ class TestDanmaku(IsolatedAsyncioTestCase):
     def tearDownClass(cls) -> None:
         os.remove(cls.cf)
 
-    @skipIf(START_LIVE)
     async def test_send(self):
         resp = await self.danmaku.send('test message')
         print(resp)
+
+    async def test_client(self):
+        await self.danmaku.start()
+        await asyncio.sleep(30)
+        await self.danmaku.stop()
