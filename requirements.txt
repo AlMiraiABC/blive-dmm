@@ -1,0 +1,8 @@
+aiohttp
+Brotli
+al-utils-almirai
+urllib3
+beautifulsoup4
+colorama
+lxml
+pyyaml

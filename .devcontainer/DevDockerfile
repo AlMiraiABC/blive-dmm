@@ -1,0 +1,9 @@
+FROM almirai/python:3.10.4-alpine
+USER root
+ENV PATH /home/appuser/.local/bin:$PATH
+COPY requirements.txt .
+RUN apk add --no-cache --update musl-dev gcc libffi-dev curl && \
+    # curl -s -o /usr/local/bin/codecov https://uploader.codecov.io/latest/linux/codecov && chmod +x /usr/local/bin/codecov && \
+    python -m pip install --no-cache-dir -U -i https://pypi.tuna.tsinghua.edu.cn/simple pip
+RUN pip install --no-cache-dir -i https://pypi.tuna.tsinghua.edu.cn/simple -r requirements.txt
+USER appuser
