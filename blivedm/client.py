@@ -599,13 +599,15 @@ class BLiveClient:
         :param command: 业务消息
         """
         # 外部代码可能不能正常处理取消，所以这里加shield
+        # https://github.com/microsoft/IoT-For-Beginners/issues/350#issuecomment-983258766
+        # `asyncio.shield` and `gather` remove arg `loop` in python 3.10
         results = await asyncio.shield(
             asyncio.gather(
                 *(handler.handle(self, command) for handler in self._handlers),
-                loop=self._loop,
+                # loop=self._loop,
                 return_exceptions=True
-            ),
-            loop=self._loop
+            )
+            # loop=self._loop
         )
         for res in results:
             if isinstance(res, Exception):
