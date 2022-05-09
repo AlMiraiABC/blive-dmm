@@ -1,37 +1,59 @@
-import aiohttp
 import blivedm
 from al_utils.async_util import async_wrap
 from al_utils.logger import Logger
 from bilibili_api import Credential
 from bilibili_api.live import LiveRoom
 from bilibili_api.utils.Danmaku import Danmaku as Dm
+from bilibili_api.utils.Danmaku import Mode as DmMode
 
-from manager.config import Config, ConfigCredential, ConfigDanmaku, ConfigRoom
+from manager.config import (Config, ConfigCredential, ConfigDanmaku,
+                            ConfigDanmakuStyle, ConfigReply, ConfigRoom)
 
 logger = Logger('Danmaku').logger
 
 
 class Danmaku:
-    def __init__(self, credential: ConfigCredential = None, room: ConfigRoom = None, danmaku: ConfigDanmaku = None) -> None:
+    def __init__(self, credential: ConfigCredential = None, room: ConfigRoom = None, danmaku: ConfigDanmaku = None, reply: ConfigReply = None) -> None:
         credential = credential or Config().get_credential()
         room = room or Config().get_room()
         danmaku = danmaku or Config().get_danmaku()
-        self.room = room['id']
-        self.data = danmaku['style']
-        self.session = aiohttp.ClientSession()
+        reply = reply or Config().get_reply()
+        # self.session = aiohttp.ClientSession()
         self.credential = Credential(**credential)
-        self.live = LiveRoom(self.room, self.credential)
-        self.client = blivedm.BLiveClient(self.room, ssl=True)
+        self.room = LiveRoom(room['id'], self.credential)
+        self.client = blivedm.BLiveClient(room['id'], ssl=True)
         self.client.add_handler(_Handler(self))
+        self.reply = reply
+        self.danmaku_style = self.convert_style(danmaku['style'])
+
+    def convert_style(self, style: ConfigDanmakuStyle) -> dict:
+        d = {
+            "scroll": DmMode.FLY,
+            "top": DmMode.TOP,
+            "bottom": DmMode.BOTTOM
+        }
+        return {'color': style['color'], 'mode': d[style['position']]}
 
     async def send(self, message: str):
-        return await self.live.send_danmaku(Dm(message))
+        """Send a danmaku message to live room."""
+        return await self.room.send_danmaku(Dm(message, **self.danmaku_style))
 
     async def start(self):
+        logger.info("Starting client...")
         await async_wrap(self.client.start)()
+        logger.info("Client started.")
 
     async def stop(self):
+        logger.info("Closing client...")
         await self.client.stop_and_close()
+        logger.info("Client stopped.")
+
+    async def __aenter__(self):
+        await self.start()
+        return self
+
+    async def __aexit__(self):
+        await self.stop()
 
 
 class _Handler(blivedm.BaseHandler):
@@ -67,8 +89,9 @@ class _Handler(blivedm.BaseHandler):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) gift '
                     f'{message.gift_name}x{message.num}'
                     f' coin {message.coin_type}x{message.total_coin}')
-        await self.danmaku.send(
-            f"感谢{message.uname}赠送的{message.num}个{message.gift_name}")
+        t = self.danmaku.reply.get('gift')
+        if t:
+            await self.danmaku.send(format_message(message, t))
 
     async def _on_buy_guard(self, client: blivedm.BLiveClient, message: blivedm.GuardBuyMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.username}) guard '
@@ -77,3 +100,10 @@ class _Handler(blivedm.BaseHandler):
     async def _on_super_chat(self, client: blivedm.BLiveClient, message: blivedm.SuperChatMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) superchat '
                     f'{message.price}-{message.message}')
+
+
+def format_message(message: object, template: str) -> str:
+    d = message.__dict__
+    for k, v in d.items():
+        template = template.replace(f'${{{k}}}', str(v))
+    return template
