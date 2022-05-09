@@ -31,11 +31,25 @@ class ConfigDanmaku(TypedDict):
     style: ConfigDanmakuStyle
 
 
+class ConfigAppLog(TypedDict):
+    config: str
+
+
+class ConfigAppMonitor(TypedDict):
+    interval: int
+
+
 class ConfigApp(TypedDict):
-    log_config: str
+    log: ConfigAppLog
+    monitor: ConfigAppMonitor
+
+
+class ConfigUser(TypedDict):
+    id: str
 
 
 class ConfigDict(TypedDict):
+    user: ConfigUser
     room: ConfigRoom
     credential: ConfigCredential
     danmaku: ConfigDanmaku
@@ -103,3 +117,6 @@ class Config(Singleton):
 
     def get_app(self) -> ConfigApp:
         return self.config.get('app')
+
+    def get_user(self) -> ConfigUser:
+        return self.config.get('user')

@@ -11,6 +11,7 @@
     "python.envFile": "${workspaceFolder}/.env",
     "conventionalCommits.scopes": [
         "manager",
-        "test"
+        "test",
+        "util"
     ]
 }

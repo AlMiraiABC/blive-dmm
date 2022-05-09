@@ -4,6 +4,19 @@
     "description": "Schama for bilibili-live-dm-manager's config.json",
     "type": "object",
     "properties": {
+        "user": {
+            "description": "UP主个人信息",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "主播的UID/ID/MID",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
         "room": {
             "type": "object",
             "description": "直播间",
@@ -103,14 +116,32 @@
             "type": "object",
             "description": "Application configurations",
             "properties": {
-                "log_config": {
-                    "description": "Path of logger config file.",
-                    "type": "string"
+                "log": {
+                    "description": "设置日志",
+                    "type": "object",
+                    "properties": {
+                        "config": {
+                            "description": "日志配置文件所在路径",
+                            "type": "string"
+                        }
+                    }
+                },
+                "monitor": {
+                    "description": "设置监控",
+                    "type": "object",
+                    "properties": {
+                        "interval": {
+                            "description": "监控刷新间隔时间(秒)",
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
                 }
             }
         }
     },
     "required": [
+        "user",
         "room",
         "credential"
     ]

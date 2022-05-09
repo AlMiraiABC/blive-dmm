@@ -1,23 +1,26 @@
 import blivedm
 from al_utils.async_util import async_wrap
-from al_utils.logger import Logger
 from bilibili_api import Credential
 from bilibili_api.live import LiveRoom
+from bilibili_api.user import User
 from bilibili_api.utils.Danmaku import Danmaku as Dm
 from bilibili_api.utils.Danmaku import Mode as DmMode
+from utils.logger import Logger
 
 from manager.config import (Config, ConfigCredential, ConfigDanmaku,
-                            ConfigDanmakuStyle, ConfigReply, ConfigRoom)
+                            ConfigDanmakuStyle, ConfigReply, ConfigRoom,
+                            ConfigUser)
 
 logger = Logger('Danmaku').logger
 
 
-class Danmaku:
-    def __init__(self, credential: ConfigCredential = None, room: ConfigRoom = None, danmaku: ConfigDanmaku = None, reply: ConfigReply = None) -> None:
+class Room:
+    def __init__(self, credential: ConfigCredential = None, room: ConfigRoom = None, danmaku: ConfigDanmaku = None, reply: ConfigReply = None, user: ConfigUser = None) -> None:
         credential = credential or Config().get_credential()
         room = room or Config().get_room()
         danmaku = danmaku or Config().get_danmaku()
         reply = reply or Config().get_reply()
+        user = user or Config().get_user()
         # self.session = aiohttp.ClientSession()
         self.credential = Credential(**credential)
         self.room = LiveRoom(room['id'], self.credential)
@@ -25,6 +28,16 @@ class Danmaku:
         self.client.add_handler(_Handler(self))
         self.reply = reply
         self.danmaku_style = self.convert_style(danmaku['style'])
+        self.user = User(user['id'], self.credential)
+
+    async def status(self) -> tuple[bool, int | None, int | None]:
+        resp = await self.user.get_user_info()
+        live_room: dict = resp.get('live_room')
+        if not live_room:
+            return False, None, None
+        rs: int | None = live_room.get('roomStatus')
+        ls: int | None = live_room.get('liveStatus')
+        return bool(rs and ls), rs, ls
 
     def convert_style(self, style: ConfigDanmakuStyle) -> dict:
         d = {
@@ -52,23 +65,16 @@ class Danmaku:
         await self.start()
         return self
 
-    async def __aexit__(self):
+    async def __aexit__(self, *_):
         await self.stop()
 
 
 class _Handler(blivedm.BaseHandler):
-    def __init__(self, danmaku: Danmaku) -> None:
+    _CMD_CALLBACK_DICT = blivedm.BaseHandler._CMD_CALLBACK_DICT.copy()
+
+    def __init__(self, danmaku: Room) -> None:
         self.danmaku = danmaku
         super().__init__()
-    # # 演示如何添加自定义回调
-    # _CMD_CALLBACK_DICT = blivedm.BaseHandler._CMD_CALLBACK_DICT.copy()
-    #
-    # # 入场消息回调
-    # async def __interact_word_callback(self, client: blivedm.BLiveClient, command: dict):
-    #     print(f"[{client.room_id}] INTERACT_WORD: self_type={type(self).__name__}, room_id={client.room_id},"
-    #           f" uname={command['data']['uname']}")
-    # _CMD_CALLBACK_DICT['INTERACT_WORD'] = __interact_word_callback  # noqa
-    _CMD_CALLBACK_DICT = blivedm.BaseHandler._CMD_CALLBACK_DICT.copy()
 
     async def _on_welcome(self, client: blivedm.BLiveClient, command: dict):
         data = command['data']

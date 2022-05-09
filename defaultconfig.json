@@ -1,5 +1,8 @@
 {
     "$schema": "./config-schema.json",
+    "user": {
+        "id": 0
+    },
     "room": {
         "id": 0
     },
@@ -20,6 +23,11 @@
         "enable": []
     },
     "app": {
-        "log_config": ""
+        "log":{
+            "config":""
+        },
+        "monitor": {
+            "interval": 30
+        }
     }
 }

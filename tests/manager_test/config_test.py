@@ -3,7 +3,6 @@ import os
 from tempfile import mkstemp
 from unittest import TestCase
 from manager.config import Config
-from tests.manager_test.danmaku_test import CONFIG
 
 
 class TestConfig(TestCase):
