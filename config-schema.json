@@ -49,13 +49,20 @@
                     "description": "弹幕样式设置",
                     "properties": {
                         "color": {
-                            "type": "integer"
+                            "type": "string",
+                            "description": "弹幕颜色, 6位HEX格式字符串, 必须拥有使用该颜色的权限",
+                            "pattern": "^[a-fA-F0-9]{6}$",
+                            "default": "ffffff"
                         },
-                        "mode": {
-                            "type": "integer"
-                        },
-                        "fontsize": {
-                            "type": "integer"
+                        "position": {
+                            "type": "string",
+                            "description": "弹幕位置, 必须拥有使用该位置的权限",
+                            "enum": [
+                                "scroll",
+                                "top",
+                                "bottom"
+                            ],
+                            "default": "scroll"
                         }
                     }
                 }
@@ -65,13 +72,40 @@
             "type": "object",
             "description": "自动回复",
             "properties": {
-                "visit": {
+                "welcome": {
                     "type": "string",
-                    "description": "游客进入直播间"
+                    "description": "游客进入直播间时发送的弹幕."
                 },
                 "gift": {
                     "type": "string",
-                    "description": "收到礼物"
+                    "description": "收到礼物时发送的弹幕\n支持的变量: gift_name, num, uname, action, price, coin_type, total_coin等\n详见`blivedm.models.GiftMessage`",
+                    "default": "感谢${uname}赠送的${num}个${gift_name}"
+                },
+                "enable": {
+                    "type": "array",
+                    "description": "开启自动回复的类型",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "welcome",
+                            "gift"
+                        ]
+                    },
+                    "default": []
+                }
+            },
+            "required": [
+                "enable"
+            ]
+        },
+        "app": {
+            "type": "object",
+            "description": "Application configurations",
+            "properties": {
+                "log_config": {
+                    "description": "Path of logger config file.",
+                    "type": "string"
                 }
             }
         }

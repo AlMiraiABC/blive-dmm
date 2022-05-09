@@ -10,13 +10,16 @@
     },
     "danmaku": {
         "style": {
-            "color": 16777215,
-            "mode": 1,
-            "fontsize": 25
+            "color": "ffffff",
+            "position": "scroll"
         }
     },
     "reply": {
-        "visit": "欢迎${username}光临${roomname}",
-        "gift": "感谢${username}赠送的${giftnum}个${giftname}"
+        "welcome": "欢迎${uname}光临",
+        "gift": "感谢${uname}赠送的${num}个${gift_name}",
+        "enable": []
+    },
+    "app": {
+        "log_config": ""
     }
 }
