@@ -3,9 +3,8 @@ import json
 import os
 from tempfile import mkstemp
 from unittest import IsolatedAsyncioTestCase
-
 from manager.config import Config
-from manager.danmaku import Danmaku
+from manager.danmaku import Danmaku, format_message
 
 CONFIG = {
     "room": {
@@ -41,3 +40,36 @@ class TestDanmaku(IsolatedAsyncioTestCase):
         await self.danmaku.start()
         await asyncio.sleep(30)
         await self.danmaku.stop()
+
+    def test_format_message(self):
+        from blivedm.models import GiftMessage
+        UNAME = 'userabc'
+        NUM = 30
+        GIFT_NAME = 'ggggnnnn'
+        message = GiftMessage(uname=UNAME, num=NUM, gift_name=GIFT_NAME)
+        template = '感谢${uname}赠送的${num}个${gift_name}'
+        expect = f'感谢{UNAME}赠送的{NUM}个{GIFT_NAME}'
+        truth = format_message(message, template)
+        self.assertEquals(expect, truth)
+
+    def test_format_message_none_attr(self):
+        from blivedm.models import GiftMessage
+        UNAME = 'userabc'
+        NUM = None
+        GIFT_NAME = 'ggggnnnn'
+        message = GiftMessage(uname=UNAME, num=None, gift_name=GIFT_NAME)
+        template = '感谢${uname}赠送的${num}个${gift_name}'
+        expect = f'感谢{UNAME}赠送的{NUM}个{GIFT_NAME}'
+        truth = format_message(message, template)
+        self.assertEquals(expect, truth)
+
+    def test_format_message_unexist_attr(self):
+        from blivedm.models import GiftMessage
+        UNAME = 'userabc'
+        NUM = 30
+        GIFT_NAME = 'ggggnnnn'
+        message = GiftMessage(uname=UNAME, num=NUM, gift_name=GIFT_NAME)
+        template = '感谢${uname}赠送的${un_attr}个${gift_name}'
+        expect = f'感谢{UNAME}赠送的${{un_attr}}个{GIFT_NAME}'
+        truth = format_message(message, template)
+        self.assertEquals(expect, truth)
