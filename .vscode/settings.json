@@ -10,7 +10,6 @@
     "python.testing.unittestEnabled": true,
     "python.envFile": "${workspaceFolder}/.env",
     "conventionalCommits.scopes": [
-        "utils",
         "manager"
     ]
 }
