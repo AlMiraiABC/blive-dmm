@@ -12,6 +12,7 @@
     "conventionalCommits.scopes": [
         "manager",
         "test",
-        "util"
+        "util",
+        "docker"
     ]
 }
