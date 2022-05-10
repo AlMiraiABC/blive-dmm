@@ -4,6 +4,8 @@ tests
 .vscode
 .coverage
 coverage.*
+config.json
+.env
 **/*.log.*
 **/__pycache__
 **/.classpath
