@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 from typing import *
 
-from utils.logger import Logger
+from manager.logger import Logger
 
 from . import client as client_
 from . import models
