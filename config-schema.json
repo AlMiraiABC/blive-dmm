@@ -1,0 +1,148 @@
+{
+    "$schema": "http://json-schema.org/draft-04/schema#",
+    "title": "bilibili-live-dm-manager config schema.",
+    "description": "Schama for bilibili-live-dm-manager's config.json",
+    "type": "object",
+    "properties": {
+        "user": {
+            "description": "UP主个人信息",
+            "type": "object",
+            "properties": {
+                "id": {
+                    "description": "主播的UID/ID/MID",
+                    "type": "integer"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "room": {
+            "type": "object",
+            "description": "直播间",
+            "properties": {
+                "id": {
+                    "type": "integer",
+                    "description": "直播间房间号"
+                }
+            },
+            "required": [
+                "id"
+            ]
+        },
+        "credential": {
+            "type": "object",
+            "description": "登录身份认证, 登陆后从cookie获取",
+            "properties": {
+                "buvid3": {
+                    "type": "string",
+                    "description": "buvid3"
+                },
+                "sessdata": {
+                    "type": "string",
+                    "description": "SESSDATA"
+                },
+                "bili_jct": {
+                    "type": "string",
+                    "description": "bili_jct"
+                }
+            },
+            "required": [
+                "buvid3",
+                "sessdata",
+                "bili_jct"
+            ]
+        },
+        "danmaku": {
+            "type": "object",
+            "description": "弹幕设置",
+            "properties": {
+                "style": {
+                    "type": "object",
+                    "description": "弹幕样式设置",
+                    "properties": {
+                        "color": {
+                            "type": "string",
+                            "description": "弹幕颜色, 6位HEX格式字符串, 必须拥有使用该颜色的权限",
+                            "pattern": "^[a-fA-F0-9]{6}$",
+                            "default": "ffffff"
+                        },
+                        "position": {
+                            "type": "string",
+                            "description": "弹幕位置, 必须拥有使用该位置的权限",
+                            "enum": [
+                                "scroll",
+                                "top",
+                                "bottom"
+                            ],
+                            "default": "scroll"
+                        }
+                    }
+                }
+            }
+        },
+        "reply": {
+            "type": "object",
+            "description": "自动回复",
+            "properties": {
+                "welcome": {
+                    "type": "string",
+                    "description": "游客进入直播间时发送的弹幕."
+                },
+                "gift": {
+                    "type": "string",
+                    "description": "收到礼物时发送的弹幕\n支持的变量: gift_name, num, uname, action, price, coin_type, total_coin等\n详见`blivedm.models.GiftMessage`",
+                    "default": "感谢${uname}赠送的${num}个${gift_name}"
+                },
+                "enable": {
+                    "type": "array",
+                    "description": "开启自动回复的类型",
+                    "uniqueItems": true,
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "welcome",
+                            "gift"
+                        ]
+                    },
+                    "default": []
+                }
+            },
+            "required": [
+                "enable"
+            ]
+        },
+        "app": {
+            "type": "object",
+            "description": "Application configurations",
+            "properties": {
+                "log": {
+                    "description": "设置日志",
+                    "type": "object",
+                    "properties": {
+                        "config": {
+                            "description": "日志配置文件所在路径",
+                            "type": "string"
+                        }
+                    }
+                },
+                "monitor": {
+                    "description": "设置监控",
+                    "type": "object",
+                    "properties": {
+                        "interval": {
+                            "description": "监控刷新间隔时间(秒)",
+                            "type": "integer",
+                            "default": 30
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "required": [
+        "user",
+        "room",
+        "credential"
+    ]
+}

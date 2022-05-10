@@ -1,0 +1,33 @@
+{
+    "$schema": "./config-schema.json",
+    "user": {
+        "id": 0
+    },
+    "room": {
+        "id": 0
+    },
+    "credential": {
+        "buvid3": "",
+        "sessdata": "",
+        "bili_jct": ""
+    },
+    "danmaku": {
+        "style": {
+            "color": "ffffff",
+            "position": "scroll"
+        }
+    },
+    "reply": {
+        "welcome": "欢迎${uname}光临",
+        "gift": "感谢${uname}赠送的${num}个${gift_name}",
+        "enable": []
+    },
+    "app": {
+        "log":{
+            "config":""
+        },
+        "monitor": {
+            "interval": 30
+        }
+    }
+}
