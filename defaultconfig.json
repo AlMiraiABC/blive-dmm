@@ -1,15 +1,15 @@
 {
     "$schema": "./config-schema.json",
     "user": {
-        "id": 0
+        "id": "BLDM_USER_ID"
     },
     "room": {
-        "id": 0
+        "id": "BLDM_ROOM_ID"
     },
     "credential": {
-        "buvid3": "",
-        "sessdata": "",
-        "bili_jct": ""
+        "buvid3": "${BLDM_BUVID3}",
+        "sessdata": "${BLDM_SESSDATA}",
+        "bili_jct": "${BLDM_BILI_JCT}"
     },
     "danmaku": {
         "style": {
@@ -23,8 +23,8 @@
         "enable": []
     },
     "app": {
-        "log":{
-            "config":""
+        "log": {
+            "config": ""
         },
         "monitor": {
             "interval": 30

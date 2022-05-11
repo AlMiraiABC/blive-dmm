@@ -9,7 +9,7 @@ from typing import *
 
 import aiohttp
 import brotli
-from utils.logger import Logger
+from manager.logger import Logger
 
 from . import handlers
 

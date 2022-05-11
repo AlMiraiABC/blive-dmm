@@ -5,11 +5,11 @@ from bilibili_api.live import LiveRoom
 from bilibili_api.user import User
 from bilibili_api.utils.Danmaku import Danmaku as Dm
 from bilibili_api.utils.Danmaku import Mode as DmMode
-from utils.logger import Logger
 
 from manager.config import (Config, ConfigCredential, ConfigDanmaku,
                             ConfigDanmakuStyle, ConfigReply, ConfigRoom,
                             ConfigUser)
+from manager.logger import Logger
 
 logger = Logger('Danmaku').logger
 

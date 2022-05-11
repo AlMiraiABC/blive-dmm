@@ -1,10 +1,9 @@
 import asyncio
-import json
 import os
-from tempfile import mkstemp
-from unittest import IsolatedAsyncioTestCase
-from manager.config import Config
+from unittest import IsolatedAsyncioTestCase, skip
+
 from manager.room import Room, format_message
+from utils.config_util import ConfigUtil
 
 CONFIG = {
     "room": {
@@ -24,21 +23,14 @@ CONFIG = {
 class TestRoom(IsolatedAsyncioTestCase):
     @classmethod
     def setUpClass(cls) -> None:
-        (fd, fn) = mkstemp(text=True)
-        with open(fd, 'w', encoding='utf-8') as cf:
-            json.dump(CONFIG, cf)
-        cls.cf = fn
-        cls.config = Config(fn)
+        ConfigUtil(CONFIG)
         cls.room = Room()
-
-    @classmethod
-    def tearDownClass(cls) -> None:
-        os.remove(cls.cf)
 
     async def test_send(self):
         resp = await self.room.send('test message')
         print(resp)
 
+    @skip('nesting asyncio loop.')
     async def test_client(self):
         await self.room.start()
         await asyncio.sleep(30)

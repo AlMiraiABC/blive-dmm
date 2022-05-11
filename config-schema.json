@@ -10,7 +10,10 @@
             "properties": {
                 "id": {
                     "description": "主播的UID/ID/MID",
-                    "type": "integer"
+                    "type": [
+                        "integer",
+                        "string"
+                    ]
                 }
             },
             "required": [
@@ -22,7 +25,10 @@
             "description": "直播间",
             "properties": {
                 "id": {
-                    "type": "integer",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
                     "description": "直播间房间号"
                 }
             },
@@ -132,7 +138,10 @@
                     "properties": {
                         "interval": {
                             "description": "监控刷新间隔时间(秒)",
-                            "type": "integer",
+                            "type": [
+                                "integer",
+                                "string"
+                            ],
                             "default": 30
                         }
                     }
