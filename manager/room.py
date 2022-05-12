@@ -73,14 +73,23 @@ class _Handler(blivedm.BaseHandler):
     _CMD_CALLBACK_DICT = blivedm.BaseHandler._CMD_CALLBACK_DICT.copy()
 
     def __init__(self, danmaku: Room) -> None:
-        self.danmaku = danmaku
+        self.room = danmaku
         super().__init__()
+
+    def enable(self, t: str) -> str:
+        msg = self.room.reply.get(t)
+        enable = self.room.reply.get('enable')
+        if t in enable and msg:
+            return msg
+        return ''
 
     async def _on_welcome(self, client: blivedm.BLiveClient, command: dict):
         data = command['data']
         logger.info(f"[{client.room_id}] welcome "
                     f"{data['uid']}({data['uname']})")
-        await self.danmaku.send(f"欢迎{data['uname']}进入直播间")
+        msg = self.enable('welcome')
+        if msg:
+            await self.room.send(f"欢迎{data['uname']}进入直播间")
 
     _CMD_CALLBACK_DICT['INTERACT_WORD'] = _on_welcome
 
@@ -95,9 +104,9 @@ class _Handler(blivedm.BaseHandler):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) gift '
                     f'{message.gift_name}x{message.num}'
                     f' coin {message.coin_type}x{message.total_coin}')
-        t = self.danmaku.reply.get('gift')
-        if t:
-            await self.danmaku.send(format_message(message, t))
+        msg = self.enable('gift')
+        if msg:
+            await self.room.send(format_message(message, msg))
 
     async def _on_buy_guard(self, client: blivedm.BLiveClient, message: blivedm.GuardBuyMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.username}) guard '
