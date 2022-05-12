@@ -1,0 +1,16 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "type": [
+                "integer",
+                "string"
+            ],
+            "description": "直播间房间号"
+        }
+    },
+    "required": [
+        "id"
+    ]
+}

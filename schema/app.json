@@ -1,0 +1,30 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "log": {
+            "description": "设置日志",
+            "type": "object",
+            "properties": {
+                "config": {
+                    "description": "日志配置文件所在路径",
+                    "type": "string"
+                }
+            }
+        },
+        "monitor": {
+            "description": "设置监控",
+            "type": "object",
+            "properties": {
+                "interval": {
+                    "description": "监控刷新间隔时间(秒)",
+                    "type": [
+                        "integer",
+                        "string"
+                    ],
+                    "default": 30
+                }
+            }
+        }
+    }
+}

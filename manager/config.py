@@ -47,6 +47,25 @@ class ConfigUser(TypedDict):
     id: str
 
 
+class ConfigNotifyEmail(TypedDict):
+    email: str
+    nickname: str
+
+
+class ConfigNotifyHost(TypedDict):
+    host: str
+    port: int
+    username: str
+    passcode: str
+    ssl: bool
+
+
+class ConfigNotify(TypedDict):
+    sender: ConfigNotifyEmail
+    receiver: list[ConfigNotifyEmail]
+    server: ConfigNotifyHost
+
+
 class ConfigDict(TypedDict):
     user: ConfigUser
     room: ConfigRoom
@@ -54,12 +73,14 @@ class ConfigDict(TypedDict):
     danmaku: ConfigDanmaku
     reply: ConfigReply
     app: ConfigApp
+    notify: ConfigNotify
 
 
 class Config(Singleton):
     def __init__(self, cfg: ConfigUtil = None):
         self.config = cfg or ConfigUtil(AppConfig.config_file, AppConfig.schema_file,
-                                        AppConfig.default_config_file, AppConfig.required)
+                                        AppConfig.default_config_file, AppConfig.required,
+                                        AppConfig.resolver)
 
     def get_room(self) -> ConfigRoom:
         return self.config.get('room')
@@ -78,3 +99,6 @@ class Config(Singleton):
 
     def get_user(self) -> ConfigUser:
         return self.config.get('user')
+
+    def get_notify(self) -> ConfigNotify:
+        return self.config.get('notify')

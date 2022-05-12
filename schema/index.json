@@ -1,0 +1,41 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "title": "bilibili-live-dm-manager config schema.",
+    "description": "Schama for bilibili-live-dm-manager's config.json",
+    "type": "object",
+    "properties": {
+        "user": {
+            "$ref": "./user.json",
+            "description": "UP主个人信息"
+        },
+        "room": {
+            "$ref": "./room.json",
+            "description": "直播间"
+        },
+        "credential": {
+            "$ref": "./credential.json",
+            "description": "登录身份认证, 登陆后从cookie获取"
+        },
+        "danmaku": {
+            "$ref": "./danmaku.json",
+            "description": "弹幕设置"
+        },
+        "reply": {
+            "$ref": "./reply.json",
+            "description": "自动回复"
+        },
+        "app": {
+            "$ref": "./app.json",
+            "description": "Blive-dmm项目设置"
+        },
+        "notify":{
+            "$ref": "./notify.json",
+            "description": "邮件通知"
+        }
+    },
+    "required": [
+        "user",
+        "room",
+        "credential"
+    ]
+}

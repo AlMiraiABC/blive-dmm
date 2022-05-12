@@ -13,6 +13,7 @@
         "manager",
         "test",
         "util",
-        "docker"
+        "docker",
+        "schema"
     ]
 }

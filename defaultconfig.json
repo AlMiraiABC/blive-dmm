@@ -1,5 +1,5 @@
 {
-    "$schema": "./config-schema.json",
+    "$schema": "./schema/index.json",
     "user": {
         "id": "BLDM_USER_ID"
     },
