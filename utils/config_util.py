@@ -3,7 +3,7 @@ import os
 import re
 from typing import TypeVar
 
-from jsonschema import validate
+from jsonschema import RefResolver, validate
 
 
 _TJ = TypeVar('_TJ', dict, list, int, str, bool)
@@ -12,7 +12,7 @@ _TJ = TypeVar('_TJ', dict, list, int, str, bool)
 class ConfigUtil():
     """Config util."""
 
-    def __init__(self, config: str | dict = {}, schema: str | dict = {}, default_config: str | dict = {}, valid: dict[str, tuple[type, list]] = {}) -> None:
+    def __init__(self, config: str | dict = {}, schema: str | dict = {}, default_config: str | dict = {}, valid: dict[str, tuple[type, list]] = {}, resolver: RefResolver = None) -> None:
         """
         Get configs combine :param:`config` and :param:`default_config`.
 
@@ -26,7 +26,7 @@ class ConfigUtil():
         self._default_config = self.load(default_config)
         self._config = self.load(config)
         self._schema = self.load(schema)
-        validate(self._config, self._schema)
+        validate(self._config, self._schema, resolver = resolver)
         self.config = self.set_envs(
             self.combine(self._default_config.copy(), self._config))
         self.valid(**valid)
