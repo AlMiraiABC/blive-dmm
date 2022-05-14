@@ -3,6 +3,7 @@ from copy import deepcopy
 from email.message import EmailMessage
 from email.utils import formataddr
 
+from al_utils.singleton import Singleton
 from app_config import NotifyConfig
 from utils.config_util import ConfigUtil
 
@@ -12,7 +13,7 @@ from manager.logger import Logger
 logger = Logger(__file__).logger
 
 
-class Notify:
+class Notify(Singleton):
     def __init__(self, notify: ConfigNotify = None) -> None:
         self.config = self.pre(notify)
 
