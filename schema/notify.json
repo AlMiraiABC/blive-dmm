@@ -11,11 +11,23 @@
                     "type": "string"
                 },
                 "nickname": {
-                    "type":"string",
+                    "type": "string",
                     "description": "用户名"
                 }
             },
-            "required": ["email"]
+            "required": [
+                "email"
+            ]
+        },
+        "on_event": {
+            "type": "object",
+            "properties": {
+                "template": {
+                    "description": "发生该事件时发送的消息内容",
+                    "type": "string",
+                    "default": ""
+                }
+            }
         }
     },
     "properties": {
@@ -65,6 +77,32 @@
                 "host",
                 "passcode"
             ]
+        },
+        "when": {
+            "type": "array",
+            "description": "发送通知",
+            "items": {
+                "type": "object",
+                "properties": {
+                    "live_room_closed": {
+                        "$ref": "#/definitions/on_event",
+                        "description": "当直播间关闭时"
+                    },
+                    "on": {
+                        "type": "array",
+                        "description": "发送通知的时机",
+                        "items": {
+                            "type": "string",
+                            "enum": [
+                                "live_room_closed"
+                            ]
+                        }
+                    }
+                },
+                "required": [
+                    "on"
+                ]
+            }
         }
     },
     "required": [

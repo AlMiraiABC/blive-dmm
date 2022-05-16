@@ -1,3 +1,4 @@
+from enum import Enum
 from typing import TypedDict
 
 from al_utils.singleton import Singleton
@@ -60,10 +61,26 @@ class ConfigNotifyHost(TypedDict):
     ssl: bool
 
 
+class ConfigNotifyWhenOn(Enum):
+    """Notify events."""
+    LIVE_ROOM_CLOSED = 'live_room_closed'
+
+
+class ConfigNotifyWhenOnEvent(TypedDict):
+    """notify.when.<event>"""
+    template: str
+
+
+class ConfigNotifyWhen(TypedDict):
+    on: list[str]
+    live_room_closed: ConfigNotifyWhenOnEvent
+
+
 class ConfigNotify(TypedDict):
     sender: ConfigNotifyEmail
     receiver: list[ConfigNotifyEmail]
     server: ConfigNotifyHost
+    when: ConfigNotifyWhen
 
 
 class ConfigDict(TypedDict):
