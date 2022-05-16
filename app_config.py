@@ -11,7 +11,7 @@ SCHEMA_DIR = os.path.realpath('./schema')
 
 
 class AppConfig:
-    default_config_file = './defaultconfig.json'
+    default_config_file = './config.default.json'
     schema_file = './schema/index.json'
     config_file = os.environ.get('BLDM_CF', './config.json')
     required: dict[str, VALID] = {
@@ -25,6 +25,7 @@ class AppConfig:
 
 
 class NotifyConfig:
+    default_config_file = './config.notify.default.json'
     schema_file = './schema/notify.json'
     required = {
         'sender.email': ([str], ['']),

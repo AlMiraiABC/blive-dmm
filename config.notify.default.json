@@ -1,0 +1,13 @@
+{
+    "$schema": "./schema/index.json",
+    "notify": {
+        "when": [
+            {
+                "live_room_closed": {
+                    "template": "直播间已关闭"
+                },
+                "on": []
+            }
+        ]
+    }
+}
