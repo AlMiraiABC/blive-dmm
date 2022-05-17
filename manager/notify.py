@@ -111,7 +111,7 @@ def get_notify_event_config(event: ConfigNotifyWhenOn, config: ConfigNotify = No
 
 def notify_send(event: ConfigNotifyWhenOn, message: str = None, _notify: Notify = notify) -> bool:
     """
-    Send a notify email.
+    Send a notify email if configured.
 
     :param on: Occured event.
     :param message: Content of the notification.
