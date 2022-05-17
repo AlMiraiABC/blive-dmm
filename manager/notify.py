@@ -1,5 +1,4 @@
 import smtplib
-from copy import deepcopy
 from email.message import EmailMessage
 from email.utils import formataddr
 
@@ -7,15 +6,15 @@ from al_utils.singleton import Singleton
 from app_config import NotifyConfig
 from utils.config_util import ConfigUtil
 
-from manager.config import ConfigNotify
+from manager.config import Config, ConfigNotify, ConfigNotifyWhenOn
 from manager.logger import Logger
 
 logger = Logger(__file__).logger
 
 
 class Notify(Singleton):
-    def __init__(self, notify: ConfigNotify = None) -> None:
-        self.config = self.pre(notify)
+    def __init__(self, config: ConfigNotify = None) -> None:
+        self.config = self.pre(config)
 
     def pre(self, config: ConfigNotify) -> ConfigNotify:
         """
@@ -23,9 +22,8 @@ class Notify(Singleton):
 
         :returns: Processed config if exists. Otherwise an empty dict.
         """
-        ConfigUtil(config, NotifyConfig.schema_file,
-                   valid=NotifyConfig.required)
-        c = deepcopy(config)
+        c = ConfigUtil().combine(NotifyConfig.default_config_file, config)
+        ConfigUtil(c, NotifyConfig.schema_file, valid=NotifyConfig.required)
         sender = c['sender']
         if not sender.get('nickname'):
             sender['nickname'] = ''
@@ -91,3 +89,50 @@ class Notify(Singleton):
             return (True, None)
         except Exception as ex:
             return(False, ex)
+
+
+_notify_config = Config().get_notify()
+notify = Notify(_notify_config) if _notify_config else None
+
+
+def get_notify_event_config(event: ConfigNotifyWhenOn, config: ConfigNotify = None):
+    """
+    Get notify.when.<:param:`event`> if :param:`event` in :param:`config`.when.on list.
+
+    :param event: Occured event.
+    :returns: notify.when.<:param:`event`> if :param:`event` in :param:`config`.when.on list, otherwise None."""
+    config = config or (notify.config if notify else None)
+    if not config:
+        return None
+    on = config['when']['on']
+    if event.value in on:
+        return config['when'].get(event.value)
+
+
+def notify_send(event: ConfigNotifyWhenOn, message: str = None, _notify: Notify = notify) -> bool:
+    """
+    Send a notify email.
+
+    :param on: Occured event.
+    :param message: Content of the notification.
+    :param _notify: :class:`Notify` instance.
+    :returns: True if the notification sent successfully. Otherwise False.
+    """
+    _notify = _notify or notify
+    if not _notify:
+        logger.error('Cannot get notify instance.')
+        return False
+    message = message or get_notify_event_config(event, _notify.config)
+    if not message:
+        logger.error('Cannot get notify message of {}'.format(event.value))
+        return False
+    try:
+        ret, ex = _notify.send('BLDM notify', message)
+        if ex:
+            logger.error('Cannot send notify email with error: {}'.format(ex))
+        logger.info('Send notify email successfully.')
+        return ret
+    except Exception as ex:
+        logger.error(
+            'Occured an error when sending notify email: {}'.format(ex))
+        return False

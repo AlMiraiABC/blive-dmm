@@ -1,7 +1,9 @@
 import os
+from smtplib import SMTP
 from unittest import TestCase
-from manager.config import ConfigNotify
-from manager.nofity import Notify
+from unittest.mock import patch
+from manager.config import ConfigNotify, ConfigNotifyWhenOn
+from manager.notify import Notify, get_notify_event_config, notify_send
 
 
 class TestNotify(TestCase):
@@ -29,6 +31,17 @@ class TestNotify(TestCase):
                          CONFIG["server"]["passcode"])
         self.assertEqual(config["server"]["ssl"], True)
         self.assertEqual(config["server"]["port"], 465)
+
+    @patch.object(SMTP, 'connect', lambda *args, **kwargs: (220, ''))
+    @patch.object(SMTP, 'login', lambda *args, **kw: None)
+    @patch.object(SMTP, 'send_message', lambda *args, **kwargs: None)
+    @patch.object(SMTP, 'quit', lambda *args, **kwargs: None)
+    def mock_smtp_success(self):
+        """Mock SMTP with successfully return."""
+
+    @patch.object(SMTP, 'connect', lambda *args, **kwargs: (_ for _ in ()).throw(Exception('Cannot connect to smtp host.')))
+    def mock_smtp_fail(self):
+        """Mock SMTP but failed and raise and exception."""
 
     def test_send_one(self):
         CONFIG: ConfigNotify = {
@@ -69,3 +82,36 @@ class TestNotify(TestCase):
         (ret, ex) = notify.send("blive-dmm 测试邮件标题", "blive-dmm 邮件内容")
         self.assertTrue(ret)
         self.assertIsNone(ex)
+
+    def test_get_notify_event_config(self):
+        CONFIG: ConfigNotify = {
+            "when": {
+                "live_room_closed": {
+                    "template": "test"
+                },
+                "on": ["live_room_closed"]
+            }
+        }
+        ret = get_notify_event_config(
+            ConfigNotifyWhenOn.LIVE_ROOM_CLOSED, CONFIG)
+        self.assertDictEqual(ret, CONFIG['when']["live_room_closed"])
+
+    def test_get_notify_event_config_not_on(self):
+        CONFIG: ConfigNotify = {
+            "when": {
+                "live_room_closed": {
+                    "template": "test"
+                },
+                "on": []
+            }
+        }
+        ret = get_notify_event_config(
+            ConfigNotifyWhenOn.LIVE_ROOM_CLOSED, CONFIG)
+        self.assertIsNone(ret)
+
+    @patch('manager.notify.Notify', spec=Notify)
+    def test_notify_send(self, notify):
+        notify.send.return_value = (True, None)
+        ret = notify_send(
+            ConfigNotifyWhenOn.LIVE_ROOM_CLOSED, 'closed', notify)
+        self.assertTrue(ret)
