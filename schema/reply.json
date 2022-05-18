@@ -23,7 +23,8 @@
                 "type": "string",
                 "enum": [
                     "welcome",
-                    "gift"
+                    "gift",
+                    "follow"
                 ]
             },
             "default": []

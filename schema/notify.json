@@ -79,34 +79,32 @@
             ]
         },
         "when": {
-            "type": "array",
             "description": "发送通知",
-            "items": {
-                "type": "object",
-                "properties": {
-                    "live_room_closed": {
-                        "$ref": "#/definitions/on_event",
-                        "description": "当直播间关闭时"
-                    },
-                    "on": {
-                        "type": "array",
-                        "description": "发送通知的时机",
-                        "items": {
-                            "type": "string",
-                            "enum": [
-                                "live_room_closed"
-                            ]
-                        }
-                    }
+            "type": "object",
+            "properties": {
+                "live_room_closed": {
+                    "$ref": "#/definitions/on_event",
+                    "description": "当直播间关闭时"
                 },
-                "required": [
-                    "on"
-                ]
-            }
+                "on": {
+                    "type": "array",
+                    "description": "发送通知的时机",
+                    "items": {
+                        "type": "string",
+                        "enum": [
+                            "live_room_closed"
+                        ]
+                    }
+                }
+            },
+            "required": [
+                "on"
+            ]
         }
     },
     "required": [
         "sender",
-        "server"
+        "server",
+        "when"
     ]
 }

@@ -4,9 +4,14 @@ from unittest import TestCase
 from unittest.mock import patch
 from manager.config import ConfigNotify, ConfigNotifyWhenOn
 from manager.notify import Notify, get_notify_event_config, notify_send
+from al_utils.singleton import _containers, DEFAULT_CONTAINER_NAME
 
 
 class TestNotify(TestCase):
+    def setUp(self) -> None:
+        _containers[DEFAULT_CONTAINER_NAME].pop(Notify, None)
+        return super().setUp()
+
     def test_pre_minimum(self):
         CONFIG: ConfigNotify = {
             "sender": {
@@ -15,10 +20,14 @@ class TestNotify(TestCase):
             "server": {
                 "host": "imtp.test.com",
                 "passcode": "1234567"
+            },
+            "when": {
+                "on": ["live_room_closed"]
             }
         }
         sender = CONFIG["sender"]
         sender["nickname"] = ''
+        self.setUp()
         notify = Notify(CONFIG)
         config = notify.config
         self.assertEqual(config["sender"]["email"], sender["email"])
@@ -52,6 +61,9 @@ class TestNotify(TestCase):
             "server": {
                 "host": os.environ["BLDM_EMAIL_HOST"],
                 "passcode": os.environ["BLDM_EMAIL_PASSCODE"]
+            },
+            "when": {
+                "on": ["live_room_closed"]
             }
         }
         notify = Notify(CONFIG)

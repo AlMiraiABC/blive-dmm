@@ -22,8 +22,7 @@ class Notify(Singleton):
 
         :returns: Processed config if exists. Otherwise an empty dict.
         """
-        c = ConfigUtil().combine(NotifyConfig.default_config_file, config)
-        ConfigUtil(c, NotifyConfig.schema_file, valid=NotifyConfig.required)
+        c = ConfigUtil(config, NotifyConfig.schema_file, valid=NotifyConfig.required).config
         sender = c['sender']
         if not sender.get('nickname'):
             sender['nickname'] = ''
