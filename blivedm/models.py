@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
-from typing import *
+from abc import ABC, abstractclassmethod
+from typing import List, Union
 
 __all__ = (
     'HeartbeatMessage',
@@ -9,10 +10,20 @@ __all__ = (
     'GuardBuyMessage',
     'SuperChatMessage',
     'SuperChatDeleteMessage',
+    'FansMedalMessage',
+    'InteractWordMessage'
 )
 
 
-class HeartbeatMessage:
+class Message(ABC):
+    """Base message interface."""
+    @abstractclassmethod
+    def from_command(cls, data: dict):
+        """Convert data to a Message."""
+        pass
+
+
+class HeartbeatMessage(Message):
     """
     心跳消息
 
@@ -32,7 +43,7 @@ class HeartbeatMessage:
         )
 
 
-class DanmakuMessage:
+class DanmakuMessage(Message):
     """
     弹幕消息
 
@@ -250,7 +261,7 @@ class DanmakuMessage:
             return {}
 
 
-class GiftMessage:
+class GiftMessage(Message):
     """
     礼物消息
 
@@ -326,7 +337,7 @@ class GiftMessage:
         )
 
 
-class GuardBuyMessage:
+class GuardBuyMessage(Message):
     """
     上舰消息
 
@@ -378,7 +389,7 @@ class GuardBuyMessage:
         )
 
 
-class SuperChatMessage:
+class SuperChatMessage(Message):
     """
     醒目留言消息
 
@@ -470,7 +481,7 @@ class SuperChatMessage:
         )
 
 
-class SuperChatDeleteMessage:
+class SuperChatDeleteMessage(Message):
     """
     删除醒目留言消息
 
@@ -490,7 +501,7 @@ class SuperChatDeleteMessage:
         )
 
 
-class FansMedalMessage:
+class FansMedalMessage(Message):
     """
     用户粉丝勋章信息
 
@@ -558,7 +569,7 @@ class FansMedalMessage:
         )
 
 
-class InteractWordMessage:
+class InteractWordMessage(Message):
     """
     用户进入直播间或关注主播消息
 
