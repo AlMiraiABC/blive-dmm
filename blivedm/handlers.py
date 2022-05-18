@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from abc import ABC, abstractmethod
 from typing import *
 
 from manager.logger import Logger
@@ -19,7 +20,7 @@ IGNORED_CMDS = (
     'ENTRY_EFFECT',
     'HOT_RANK_CHANGED',
     'HOT_RANK_CHANGED_V2',
-    'INTERACT_WORD',
+    # 'INTERACT_WORD',
     'LIVE',
     'LIVE_INTERACTIVE_GAME',
     'NOTICE_MSG',
@@ -44,13 +45,14 @@ IGNORED_CMDS = (
 logged_unknown_cmds = set()
 
 
-class HandlerInterface:
+class HandlerInterface(ABC):
     """
     直播消息处理器接口
     """
 
+    @abstractmethod
     async def handle(self, client: client_.BLiveClient, command: dict):
-        raise NotImplementedError
+        pass
 
 
 class BaseHandler(HandlerInterface):
