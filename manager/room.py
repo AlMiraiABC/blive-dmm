@@ -81,7 +81,7 @@ class _Handler(blivedm.BaseHandler):
             return msg
         return ''
 
-    async def _on_interact_word(self, client: blivedm.BliveClient, message: blivedm.InteractWordMessage):
+    async def _on_interact_word(self, client: blivedm.BLiveClient, message: blivedm.InteractWordMessage):
         if message.msg_type == 1:
             logger.info(f"[{client.room_id}] welcome "
                         f"{message.uid}({message.uname})")

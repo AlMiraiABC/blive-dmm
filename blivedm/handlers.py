@@ -78,7 +78,7 @@ class BaseHandler(HandlerInterface):
     def __super_chat_message_delete_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_super_chat_delete(client, models.SuperChatDeleteMessage.from_command(command['data']))
 
-    def __interact_word_callback(self, client: client_.BliveClient, command: dict):
+    def __interact_word_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_interact_word(client, models.InteractWordMessage.from_command(command['data']))
 
     # cmd -> 处理回调
@@ -157,7 +157,7 @@ class BaseHandler(HandlerInterface):
         删除醒目留言
         """
 
-    async def _on_interact_word(self, client: client_.BliveClient, message: models.InteractWordMessage):
+    async def _on_interact_word(self, client: client_.BLiveClient, message: models.InteractWordMessage):
         """
         进入直播间或关注主播
         """
