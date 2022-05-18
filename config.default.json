@@ -20,6 +20,7 @@
     "reply": {
         "welcome": "欢迎${uname}光临",
         "gift": "感谢${uname}赠送的${num}个${gift_name}",
+        "follow":"感谢${uname}关注直播间",
         "enable": []
     },
     "app": {
