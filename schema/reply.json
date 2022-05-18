@@ -4,7 +4,11 @@
     "properties": {
         "welcome": {
             "type": "string",
-            "description": "游客进入直播间时发送的弹幕."
+            "description": "游客进入直播间时发送的弹幕\n支持的变量: uid, uname等\n详见`blivedm.models.InteractWordMessage`"
+        },
+        "follow": {
+            "type": "string",
+            "description": "访客关注直播间时发送的弹幕\n支持的变量: uid, uname等\n详见`blivedm.models.InteractWordMessage`"
         },
         "gift": {
             "type": "string",

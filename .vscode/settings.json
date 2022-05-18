@@ -15,6 +15,7 @@
         "util",
         "docker",
         "schema",
-        "blivedm"
+        "blivedm",
+        "config"
     ]
 }

@@ -13,6 +13,7 @@ class ConfigRoom(TypedDict):
 class ConfigReply(TypedDict):
     welcome: str
     gift: str
+    follow: str
     enable: list[str]
 
 
