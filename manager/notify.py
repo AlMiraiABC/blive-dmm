@@ -6,7 +6,8 @@ from al_utils.singleton import Singleton
 from app_config import NotifyConfig
 from utils.config_util import ConfigUtil
 
-from manager.config import Config, ConfigNotify, ConfigNotifyWhenOn
+from manager.config import (Config, ConfigNotify, ConfigNotifyWhenOn,
+                            ConfigNotifyWhenOnEvent)
 from manager.logger import Logger
 
 logger = Logger(__file__).logger
@@ -22,7 +23,8 @@ class Notify(Singleton):
 
         :returns: Processed config if exists. Otherwise an empty dict.
         """
-        c = ConfigUtil(config, NotifyConfig.schema_file, valid=NotifyConfig.required).config
+        c = ConfigUtil(config, NotifyConfig.schema_file,
+                       valid=NotifyConfig.required).config
         sender = c['sender']
         if not sender.get('nickname'):
             sender['nickname'] = ''
@@ -94,7 +96,7 @@ _notify_config = Config().get_notify()
 notify = Notify(_notify_config) if _notify_config else None
 
 
-def get_notify_event_config(event: ConfigNotifyWhenOn, config: ConfigNotify = None):
+def get_notify_event_config(event: ConfigNotifyWhenOn, config: ConfigNotify = None) -> ConfigNotifyWhenOnEvent | None:
     """
     Get notify.when.<:param:`event`> if :param:`event` in :param:`config`.when.on list.
 
@@ -121,7 +123,9 @@ def notify_send(event: ConfigNotifyWhenOn, message: str = None, _notify: Notify 
     if not _notify:
         logger.error('Cannot get notify instance.')
         return False
-    message = message or get_notify_event_config(event, _notify.config)
+    event_config = get_notify_event_config(event, _notify.config)
+    template = event_config.get('template') if event_config else None
+    message = message or template
     if not message:
         logger.error('Cannot get notify message of {}'.format(event.value))
         return False
