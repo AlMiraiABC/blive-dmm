@@ -31,6 +31,10 @@
         "notify":{
             "$ref": "./notify.json",
             "description": "邮件通知"
+        },
+        "schedule":{
+            "$ref": "./schedule.json",
+            "description": "定时弹幕"
         }
     },
     "required": [

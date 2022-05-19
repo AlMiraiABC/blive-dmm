@@ -84,6 +84,14 @@ class ConfigNotify(TypedDict):
     when: ConfigNotifyWhen
 
 
+class ConfigScheduleItem(TypedDict):
+    message: str
+    interval: int | str
+
+
+ConfigSchedule = list[ConfigScheduleItem]
+
+
 class ConfigDict(TypedDict):
     user: ConfigUser
     room: ConfigRoom
@@ -92,6 +100,7 @@ class ConfigDict(TypedDict):
     reply: ConfigReply
     app: ConfigApp
     notify: ConfigNotify
+    schedule: ConfigSchedule
 
 
 class Config(Singleton):
@@ -120,3 +129,6 @@ class Config(Singleton):
 
     def get_notify(self) -> ConfigNotify:
         return self.config.get('notify')
+
+    def get_schedule(self) -> ConfigSchedule:
+        return self.config.get('schedule')
