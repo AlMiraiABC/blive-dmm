@@ -10,11 +10,20 @@ class ConfigRoom(TypedDict):
     id: int
 
 
+class ConfigReplyKeywordItem(TypedDict):
+    key: str | list[str]
+    message: str
+
+
+ConfigReplyKeyword = list[ConfigReplyKeywordItem]
+
+
 class ConfigReply(TypedDict):
     welcome: str
     gift: str
     follow: str
     enable: list[str]
+    keyword: ConfigReplyKeyword
 
 
 class ConfigCredential(TypedDict):
