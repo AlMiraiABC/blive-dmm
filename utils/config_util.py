@@ -9,6 +9,7 @@ from jsonschema import RefResolver, validate
 _TJ = TypeVar('_TJ', dict, list, int, str, bool)
 VALID = tuple[list[type], list]
 
+
 class ConfigUtil():
     """Config util."""
 
@@ -20,26 +21,26 @@ class ConfigUtil():
         :param schema: Path of json schema file or schema dict to valid :param:`config_file`'s format.
         :param default_config: Path of default config json file, or config dict.
         """
-        config = config or {}
-        schema = schema or {}
-        default_config = default_config or {}
+        config = {} if config is None else config
+        schema = {} if schema is None else schema
+        default_config = {} if default_config is None else default_config
         self._default_config = self.load(default_config)
         self._config = self.load(config)
         self._schema = self.load(schema)
         self.config = self.set_envs(
             self.combine(self._default_config.copy(), self._config))
-        validate(self.config, self._schema, resolver = resolver)
+        validate(self.config, self._schema, resolver=resolver)
         self.valid(**valid)
 
-    def load(self, c: str | dict, *args, **kwargs) -> dict:
+    def load(self, c: str | dict | list, *args, **kwargs) -> dict | list:
         """
         Load config as dict.
 
-        :param c: Config file path or dict.
+        :param c: Config file path or config content.
         :param args kwargs: File open args.
         :returns: Dict config.
         """
-        if isinstance(c, dict):
+        if type(c) in (dict, list):
             return c
         elif isinstance(c, str):
             if not os.path.exists(c):
@@ -47,7 +48,8 @@ class ConfigUtil():
             with open(c, 'r', *args, **kwargs) as cf:
                 return json.load(cf)
         else:
-            raise TypeError(f'config must be str or dict, but got {type(c)}.')
+            raise TypeError(
+                f'config must be str, dict or list, but got {type(c)}.')
 
     def valid(self, **kwargs: VALID):
         """
@@ -64,16 +66,24 @@ class ConfigUtil():
             if v in l:
                 raise ValueError(f'{k} cannot be one of {l}, but got {v}.')
             if type(v) not in ts:
-                raise ValueError(f'{k} should be one of {ts} but got {type(v)} with value {v}')
+                raise ValueError(
+                    f'{k} should be one of {ts} but got {type(v)} with value {v}')
 
-    def combine(self, default: dict, user: dict):
+    def combine(self, default: _TJ, user: _TJ):
+        if user is None:
+            return default
+        if type(default) != type(user):
+            raise TypeError(
+                f'params default and user must be of the same type, but got default{type(default)} user{type(user)}.')
+        if not default:
+            return user
+        if not isinstance(user, dict):
+            return user
         for k, v in user.items():
-            if isinstance(v, dict):
-                if k not in default:
-                    default[k] = {}
-                self.combine(default[k], user[k])
-            else:
+            if k not in default:
                 default[k] = v
+                continue
+            default[k] = self.combine(default[k], v)
         return default
 
     def _set_env(self, value: _TJ) -> _TJ:
