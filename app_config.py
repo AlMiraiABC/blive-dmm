@@ -32,3 +32,7 @@ class NotifyConfig:
         'server.host': ([str], ['']),
         'server.passcode': ([str], ['']),
     }
+
+
+class ScheduleConfig:
+    schema_file = './schema/schedule.json'
