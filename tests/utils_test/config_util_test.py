@@ -18,6 +18,13 @@ class TestConfigUtil(TestCase):
         for e in envs:
             os.environ.pop(e, '')
 
+    def test_valid(self):
+        config = {'k1': 1, 'k2': ''}
+        valid = {'k1': ([int], [0]), 'k2': ((int, str), ['', 0])}
+        util = ConfigUtil(config)
+        with self.assertRaises(ValueError):
+            util.valid(**valid)
+
     def test__set_env(self):
         ENV_VALUE = 'test env'
         KEY = 'BLDM_testenv'

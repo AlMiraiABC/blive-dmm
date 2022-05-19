@@ -70,19 +70,32 @@ class Room:
 
 
 class _Handler(blivedm.BaseHandler):
-    _CMD_CALLBACK_DICT = blivedm.BaseHandler._CMD_CALLBACK_DICT.copy()
-
     def __init__(self, danmaku: Room) -> None:
-        self.danmaku = danmaku
+        self.room = danmaku
         super().__init__()
 
-    async def _on_welcome(self, client: blivedm.BLiveClient, command: dict):
-        data = command['data']
-        logger.info(f"[{client.room_id}] welcome "
-                    f"{data['uid']}({data['uname']})")
-        await self.danmaku.send(f"欢迎{data['uname']}进入直播间")
+    def enable(self, t: str) -> str:
+        msg = self.room.reply.get(t)
+        enable = self.room.reply.get('enable')
+        if t in enable and msg:
+            return msg
+        return ''
 
-    _CMD_CALLBACK_DICT['INTERACT_WORD'] = _on_welcome
+    async def _on_interact_word(self, client: blivedm.BLiveClient, message: blivedm.InteractWordMessage):
+        if message.msg_type == 1:
+            logger.info(f"[{client.room_id}] welcome "
+                        f"{message.uid}({message.uname})")
+            welcome = self.enable('welcome')
+            if welcome:
+                await self.room.send(format_message(message, welcome))
+        elif message.msg_type == 2:
+            logger.info(f"[{client.room_id}] follow"
+                        f"{message.uid}({message.uname})")
+            follow = self.enable('follow')
+            if follow:
+                await self.room.send(format_message(message, follow))
+        else:
+            logger.warn(f"Unexpect msg_type {message.msg_type}. {message}")
 
     async def _on_heartbeat(self, client: blivedm.BLiveClient, message: blivedm.HeartbeatMessage):
         logger.info(f'[{client.room_id}] {message.popularity}')
@@ -95,9 +108,9 @@ class _Handler(blivedm.BaseHandler):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) gift '
                     f'{message.gift_name}x{message.num}'
                     f' coin {message.coin_type}x{message.total_coin}')
-        t = self.danmaku.reply.get('gift')
-        if t:
-            await self.danmaku.send(format_message(message, t))
+        msg = self.enable('gift')
+        if msg:
+            await self.room.send(format_message(message, msg))
 
     async def _on_buy_guard(self, client: blivedm.BLiveClient, message: blivedm.GuardBuyMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.username}) guard '

@@ -1,0 +1,28 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "style": {
+            "type": "object",
+            "description": "弹幕样式设置",
+            "properties": {
+                "color": {
+                    "type": "string",
+                    "description": "弹幕颜色, 6位HEX格式字符串, 必须拥有使用该颜色的权限",
+                    "pattern": "^[a-fA-F0-9]{6}$",
+                    "default": "ffffff"
+                },
+                "position": {
+                    "type": "string",
+                    "description": "弹幕位置, 必须拥有使用该位置的权限",
+                    "enum": [
+                        "scroll",
+                        "top",
+                        "bottom"
+                    ],
+                    "default": "scroll"
+                }
+            }
+        }
+    }
+}

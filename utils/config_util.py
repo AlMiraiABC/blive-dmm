@@ -3,16 +3,16 @@ import os
 import re
 from typing import TypeVar
 
-from jsonschema import validate
+from jsonschema import RefResolver, validate
 
 
 _TJ = TypeVar('_TJ', dict, list, int, str, bool)
-
+VALID = tuple[list[type], list]
 
 class ConfigUtil():
     """Config util."""
 
-    def __init__(self, config: str | dict = {}, schema: str | dict = {}, default_config: str | dict = {}, valid: dict[str, tuple[type, list]] = {}) -> None:
+    def __init__(self, config: str | dict = {}, schema: str | dict = {}, default_config: str | dict = {}, valid: dict[str, VALID] = {}, resolver: RefResolver = None) -> None:
         """
         Get configs combine :param:`config` and :param:`default_config`.
 
@@ -26,9 +26,9 @@ class ConfigUtil():
         self._default_config = self.load(default_config)
         self._config = self.load(config)
         self._schema = self.load(schema)
-        validate(self._config, self._schema)
         self.config = self.set_envs(
             self.combine(self._default_config.copy(), self._config))
+        validate(self.config, self._schema, resolver = resolver)
         self.valid(**valid)
 
     def load(self, c: str | dict, *args, **kwargs) -> dict:
@@ -49,22 +49,22 @@ class ConfigUtil():
         else:
             raise TypeError(f'config must be str or dict, but got {type(c)}.')
 
-    def valid(self, **kwargs: tuple[type, list]):
+    def valid(self, **kwargs: VALID):
         """
         Check value and type in config.
 
         :param args:
             1. Key name of config.
-            2. Expect value's :class:`type`.
+            2. List of expect value's :class:`type`.
             3. List of unexpected values.
         :returns: Raise ValueError if the value is unexpected or it's type is unexpected.
         """
-        for (k, (t, l)) in kwargs.items():
+        for (k, (ts, l)) in kwargs.items():
             v = self.get(k)
             if v in l:
-                raise ValueError(f'{k} is required.')
-            if not isinstance(v, t):
-                raise ValueError(f'{k} should be {t} but got {type(v)}')
+                raise ValueError(f'{k} cannot be one of {l}, but got {v}.')
+            if type(v) not in ts:
+                raise ValueError(f'{k} should be one of {ts} but got {type(v)} with value {v}')
 
     def combine(self, default: dict, user: dict):
         for k, v in user.items():

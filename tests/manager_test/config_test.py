@@ -80,3 +80,11 @@ class TestConfig(TestCase):
         self.prepare(CONFIG, False, DEFAULT)
         reply = self.config.get_reply()
         self.assertDictEqual(reply, expect["reply"])
+
+    def test_from_env(self):
+        BLDM_ROOM_ID = '1234567'
+        os.environ['BLDM_ROOM_ID'] = BLDM_ROOM_ID
+        config = Config(ConfigUtil({}, AppConfig.schema_file,
+                                   AppConfig.default_config_file, AppConfig.required,
+                                   AppConfig.resolver))
+        self.assertEqual(config.get_room()["id"], BLDM_ROOM_ID)

@@ -1,0 +1,36 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "welcome": {
+            "type": "string",
+            "description": "游客进入直播间时发送的弹幕\n支持的变量: uid, uname等\n详见`blivedm.models.InteractWordMessage`"
+        },
+        "follow": {
+            "type": "string",
+            "description": "访客关注直播间时发送的弹幕\n支持的变量: uid, uname等\n详见`blivedm.models.InteractWordMessage`"
+        },
+        "gift": {
+            "type": "string",
+            "description": "收到礼物时发送的弹幕\n支持的变量: gift_name, num, uname, action, price, coin_type, total_coin等\n详见`blivedm.models.GiftMessage`",
+            "default": "感谢${uname}赠送的${num}个${gift_name}"
+        },
+        "enable": {
+            "type": "array",
+            "description": "开启自动回复的类型",
+            "uniqueItems": true,
+            "items": {
+                "type": "string",
+                "enum": [
+                    "welcome",
+                    "gift",
+                    "follow"
+                ]
+            },
+            "default": []
+        }
+    },
+    "required": [
+        "enable"
+    ]
+}

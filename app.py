@@ -1,7 +1,8 @@
 import asyncio
 
-from manager.config import Config
+from manager.config import Config, ConfigNotifyWhenOn
 from manager.logger import Logger
+from manager.notify import notify_send
 from manager.room import Room
 
 
@@ -24,6 +25,12 @@ async def main():
             if not s[0]:
                 logger.warn(
                     f"Live room {room_id} is not boardcasting {s}.")
+                template = f"""
+                Live room {room_id} is not boardcasting {s}.
+                Please check it.
+                The BLDM has been closed automatically.
+                """
+                notify_send(ConfigNotifyWhenOn.LIVE_ROOM_CLOSED, template)
                 break
 
 if __name__ == '__main__':

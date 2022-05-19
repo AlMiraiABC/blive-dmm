@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+from abc import ABC, abstractmethod
 from typing import *
 
 from manager.logger import Logger
@@ -19,7 +20,7 @@ IGNORED_CMDS = (
     'ENTRY_EFFECT',
     'HOT_RANK_CHANGED',
     'HOT_RANK_CHANGED_V2',
-    'INTERACT_WORD',
+    # 'INTERACT_WORD',
     'LIVE',
     'LIVE_INTERACTIVE_GAME',
     'NOTICE_MSG',
@@ -44,13 +45,14 @@ IGNORED_CMDS = (
 logged_unknown_cmds = set()
 
 
-class HandlerInterface:
+class HandlerInterface(ABC):
     """
     直播消息处理器接口
     """
 
+    @abstractmethod
     async def handle(self, client: client_.BLiveClient, command: dict):
-        raise NotImplementedError
+        pass
 
 
 class BaseHandler(HandlerInterface):
@@ -76,6 +78,9 @@ class BaseHandler(HandlerInterface):
     def __super_chat_message_delete_callback(self, client: client_.BLiveClient, command: dict):
         return self._on_super_chat_delete(client, models.SuperChatDeleteMessage.from_command(command['data']))
 
+    def __interact_word_callback(self, client: client_.BLiveClient, command: dict):
+        return self._on_interact_word(client, models.InteractWordMessage.from_command(command['data']))
+
     # cmd -> 处理回调
     _CMD_CALLBACK_DICT: Dict[
         str,
@@ -97,6 +102,7 @@ class BaseHandler(HandlerInterface):
         'SUPER_CHAT_MESSAGE': __super_chat_message_callback,
         # 删除醒目留言
         'SUPER_CHAT_MESSAGE_DELETE': __super_chat_message_delete_callback,
+        'INTERACT_WORD': __interact_word_callback,
     }
     # 忽略其他常见cmd
     for cmd in IGNORED_CMDS:
@@ -112,7 +118,8 @@ class BaseHandler(HandlerInterface):
         if cmd not in self._CMD_CALLBACK_DICT:
             # 只有第一次遇到未知cmd时打日志
             if cmd not in logged_unknown_cmds:
-                logger.warning('room=%d unknown cmd=%s, command=%s', client.room_id, cmd, command)
+                logger.warning('room=%d unknown cmd=%s, command=%s',
+                               client.room_id, cmd, command)
                 logged_unknown_cmds.add(cmd)
             return
 
@@ -148,4 +155,9 @@ class BaseHandler(HandlerInterface):
     async def _on_super_chat_delete(self, client: client_.BLiveClient, message: models.SuperChatDeleteMessage):
         """
         删除醒目留言
+        """
+
+    async def _on_interact_word(self, client: client_.BLiveClient, message: models.InteractWordMessage):
+        """
+        进入直播间或关注主播
         """

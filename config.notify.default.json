@@ -1,0 +1,17 @@
+{
+    "$schema": "./schema/index.json",
+    "notify": {
+        "sender": {
+            "email": "${BLDM_EMAIL_SENDER}"
+        },
+        "server": {
+            "host": "${BLDM_EMAIL_HOST}",
+            "passcode": "${BLDM_EMAIL_PASSCODE}"
+        },
+        "when": {
+            "live_room_closed": {
+                "template": "直播间已关闭"
+            }
+        }
+    }
+}

@@ -1,0 +1,14 @@
+{
+    "$schema": "http://json-schema.org/draft-07/schema#",
+    "type": "object",
+    "properties": {
+        "id": {
+            "description": "主播的UID/ID/MID",
+            "type": "string",
+            "pattern": "^\\d+$"
+        }
+    },
+    "required": [
+        "id"
+    ]
+}

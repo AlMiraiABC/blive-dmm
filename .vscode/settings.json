@@ -13,6 +13,8 @@
         "manager",
         "test",
         "util",
-        "docker"
+        "docker",
+        "blivedm",
+        "config"
     ]
 }

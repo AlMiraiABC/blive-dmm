@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 import json
-from typing import *
+from abc import ABC, abstractclassmethod
+from typing import List, Union
 
 __all__ = (
     'HeartbeatMessage',
@@ -9,10 +10,20 @@ __all__ = (
     'GuardBuyMessage',
     'SuperChatMessage',
     'SuperChatDeleteMessage',
+    'FansMedalMessage',
+    'InteractWordMessage'
 )
 
 
-class HeartbeatMessage:
+class Message(ABC):
+    """Base message interface."""
+    @abstractclassmethod
+    def from_command(cls, data: dict):
+        """Convert data to a Message."""
+        pass
+
+
+class HeartbeatMessage(Message):
     """
     心跳消息
 
@@ -32,7 +43,7 @@ class HeartbeatMessage:
         )
 
 
-class DanmakuMessage:
+class DanmakuMessage(Message):
     """
     弹幕消息
 
@@ -250,7 +261,7 @@ class DanmakuMessage:
             return {}
 
 
-class GiftMessage:
+class GiftMessage(Message):
     """
     礼物消息
 
@@ -326,7 +337,7 @@ class GiftMessage:
         )
 
 
-class GuardBuyMessage:
+class GuardBuyMessage(Message):
     """
     上舰消息
 
@@ -378,7 +389,7 @@ class GuardBuyMessage:
         )
 
 
-class SuperChatMessage:
+class SuperChatMessage(Message):
     """
     醒目留言消息
 
@@ -470,7 +481,7 @@ class SuperChatMessage:
         )
 
 
-class SuperChatDeleteMessage:
+class SuperChatDeleteMessage(Message):
     """
     删除醒目留言消息
 
@@ -487,4 +498,155 @@ class SuperChatDeleteMessage:
     def from_command(cls, data: dict):
         return cls(
             ids=data['ids'],
+        )
+
+
+class FansMedalMessage(Message):
+    """
+    用户粉丝勋章信息
+
+    :param anchor_roomid: 获得粉丝勋章的房间号
+    :param guard_level:
+    :param icon_id:
+    :param is_lighted:
+    :param medal_color: 粉丝勋章的颜色
+    :param medal_color_border:
+    :param medal_color_end:
+    :param medal_color_start:
+    :param medal_level: 勋章等级
+    :param medal_name: 粉丝勋章名称
+    :param score:
+    :param special:
+    :param target_id: 粉丝勋章所属的主播ID
+    """
+
+    def __init__(
+        self,
+        anchor_roomid: int = None,
+        guard_level: int = None,
+        icon_id: int = None,
+        is_lighted: int = None,
+        medal_color: int = None,
+        medal_color_border: int = None,
+        medal_color_end: int = None,
+        medal_color_start: int = None,
+        medal_level: int = None,
+        medal_name: str = None,
+        score: int = None,
+        special: str = None,
+        target_id: int = None,
+    ) -> None:
+        self.anchor_roomid = anchor_roomid
+        self.guard_level = guard_level
+        self.icon_id = icon_id
+        self.is_lighted = is_lighted
+        self.medal_color = medal_color
+        self.medal_color_border = medal_color_border
+        self.medal_color_end = medal_color_end
+        self.medal_color_start = medal_color_start
+        self.medal_level = medal_level
+        self.medal_name = medal_name
+        self.score = score
+        self.special = special
+        self.target_id = target_id
+
+    @classmethod
+    def from_command(cls, data: dict):
+        return cls(
+            anchor_roomid=data["anchor_roomid"],
+            guard_level=data["guard_level"],
+            icon_id=data["icon_id"],
+            is_lighted=data["is_lighted"],
+            medal_color=data["medal_color"],
+            medal_color_border=data["medal_color_border"],
+            medal_color_end=data["medal_color_end"],
+            medal_color_start=data["medal_color_start"],
+            medal_level=data["medal_level"],
+            medal_name=data["medal_name"],
+            score=data["score"],
+            special=data["special"],
+            target_id=data["target_id"],
+        )
+
+
+class InteractWordMessage(Message):
+    """
+    用户进入直播间或关注主播消息
+
+    :param contribution_grade:
+    :param dmscore:
+    :param identities:
+    :param is_spread:
+    :param msg_type: 1 进入直播间; 2 关注主播
+    :param roomid: 房间号
+    :param score:
+    :param spread_desc:
+    :param spread_info:
+    :param tail_icon:
+    :param timestamp: 时间戳
+    :param trigger_time: 触发时间。19位时间戳，需除以100000
+    :param uid: 用户ID
+    :param uname: 用户名
+    :param uname_color:
+    :param fans_medal: 用户的粉丝勋章
+
+    Ref:
+    https://github.com/SocialSisterYi/bilibili-API-collect/blob/89564e96bbbcd04f0fcc7a609a7721fe6da89d24/live/message_stream.md#%E8%BF%9B%E5%9C%BA%E6%88%96%E5%85%B3%E6%B3%A8%E6%B6%88%E6%81%AF
+    """
+
+    def __init__(
+        self,
+        contribution_grade: int = None,
+        dmscore: int = None,
+        identities: list[int] = None,
+        is_spread: int = None,
+        msg_type: int = None,
+        roomid: int = None,
+        score: int = None,
+        spread_desc: str = None,
+        spread_info: str = None,
+        tail_icon: int = None,
+        timestamp: int = None,
+        trigger_time: int = None,
+        uid: int = None,
+        uname: str = None,
+        uname_color: str = None,
+        fans_medal: FansMedalMessage = None,
+    ) -> None:
+        self.contribution_grade = contribution_grade
+        self.dmscore = dmscore
+        self.identities = identities
+        self.is_spread = is_spread
+        self.msg_type = msg_type
+        self.roomid = roomid
+        self.score = score
+        self.spread_desc = spread_desc
+        self.spread_info = spread_info
+        self.tail_icon = tail_icon
+        self.timestamp = timestamp
+        self.trigger_time = trigger_time
+        self.uid = uid
+        self.uname = uname
+        self.uname_color = uname_color
+        self.fans_medal = fans_medal
+
+    @classmethod
+    def from_command(cls, data: dict):
+        return cls(
+            contribution_grade=data["contribution"]["grade"],
+            dmscore=data["dmscore"],
+            identities=data["identities"],
+            is_spread=data["is_spread"],
+            msg_type=data["msg_type"],
+            roomid=data["roomid"],
+            score=data["score"],
+            spread_desc=data["spread_desc"],
+            spread_info=data["spread_info"],
+            tail_icon=data["tail_icon"],
+            timestamp=data["timestamp"],
+            trigger_time=data["trigger_time"],
+            uid=data["uid"],
+            uname=data["uname"],
+            uname_color=data["uname_color"],
+            fans_medal=FansMedalMessage.from_command(data["fans_medal"])
         )
