@@ -9,7 +9,6 @@ from jsonschema import RefResolver, validate
 _TJ = TypeVar('_TJ', dict, list, int, str, bool)
 VALID = tuple[list[type], list]
 
-
 class ConfigUtil():
     """Config util."""
 
