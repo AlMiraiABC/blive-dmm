@@ -28,9 +28,13 @@
             "$ref": "./app.json",
             "description": "Blive-dmm项目设置"
         },
-        "notify":{
+        "notify": {
             "$ref": "./notify.json",
             "description": "邮件通知"
+        },
+        "schedule": {
+            "$ref": "./schedule.json",
+            "description": "定时弹幕"
         }
     },
     "required": [
