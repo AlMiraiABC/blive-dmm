@@ -1,8 +1,11 @@
 import asyncio
 import os
+import re
 from unittest import IsolatedAsyncioTestCase, skip
+from unittest.mock import patch
+from manager.config import ConfigReply, ConfigReplyKeyword
 
-from manager.room import Room, format_message
+from manager.room import _Handler, Room, format_message
 from utils.config_util import ConfigUtil
 
 CONFIG = {
@@ -72,3 +75,41 @@ class TestRoom(IsolatedAsyncioTestCase):
     async def test_status(self):
         status = self.room.status()
         self.assertTrue(status)
+
+
+class Test_Handler(IsolatedAsyncioTestCase):
+    @patch.object(_Handler, '__init__', lambda *_: None)
+    def test_get_keyword(self):
+        ks = ["k1", "k2", "k3"]
+        ms = ['msg1', 'msg2']
+        CONFIG: ConfigReply = {
+            "enable": ['keyword'],
+            "keyword": [
+                {
+                    "key": ks[0],
+                    "message": ms[0]
+                },
+                {
+                    "key": ks[1:],
+                    "message":ms[1]
+                }
+            ]
+        }
+        expect: dict[re.Pattern, str] = {
+            re.compile(ks[0]): ms[0],
+            re.compile(ks[1]): ms[1],
+            re.compile(ks[2]): ms[1]
+        }
+        handler = _Handler()
+        ret = handler.get_keyword(CONFIG)
+        self.assertDictEqual(ret, expect)
+
+    @patch.object(_Handler, '__init__', lambda *_: None)
+    def test_reply_kw(self):
+        handler = _Handler()
+        handler.keyword={
+            re.compile('bug\d+'):'There is a bug',
+            re.compile('\w+track'): 'track occured.'
+        }
+        ret = handler.reply_kw('occuredtrack')
+        self.assertEqual(ret, 'track occured.')

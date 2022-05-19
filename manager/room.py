@@ -1,3 +1,5 @@
+import re
+
 import blivedm
 from al_utils.async_util import async_wrap
 from bilibili_api import Credential
@@ -24,11 +26,11 @@ class Room:
         # self.session = aiohttp.ClientSession()
         self.credential = Credential(**credential)
         self.room = LiveRoom(room['id'], self.credential)
-        self.client = blivedm.BLiveClient(room['id'], ssl=True)
-        self.client.add_handler(_Handler(self))
         self.reply = reply
         self.danmaku_style = self.convert_style(danmaku['style'])
         self.user = User(user['id'], self.credential)
+        self.client = blivedm.BLiveClient(room['id'], ssl=True)
+        self.client.add_handler(_Handler(self))
 
     async def status(self) -> tuple[bool, int | None, int | None]:
         resp = await self.user.get_user_info()
@@ -70,8 +72,9 @@ class Room:
 
 
 class _Handler(blivedm.BaseHandler):
-    def __init__(self, danmaku: Room) -> None:
-        self.room = danmaku
+    def __init__(self, room: Room) -> None:
+        self.room = room
+        self.keyword = self.get_keyword(self.room.reply)
         super().__init__()
 
     def enable(self, t: str) -> str:
@@ -80,6 +83,28 @@ class _Handler(blivedm.BaseHandler):
         if t in enable and msg:
             return msg
         return ''
+
+    def get_keyword(self, config: ConfigReply) -> dict[re.Pattern, str]:
+        d: dict[re.Pattern, str] = {}
+        if 'keyword' not in config.get('enable'):
+            return {}
+        keyword_config = config.get('keyword')
+        if not keyword_config:
+            return {}
+        for kw in keyword_config:
+            key = kw['key']
+            msg = kw['message']
+            if isinstance(key, str):
+                kw['key'] = [key]
+            for k in kw['key']:
+                p = re.compile(k)
+                d[p] = msg
+        return d
+
+    def reply_kw(self, message: str) -> str | None:
+        for p, msg in self.keyword.items():
+            if re.search(p, message):
+                return msg
 
     async def _on_interact_word(self, client: blivedm.BLiveClient, message: blivedm.InteractWordMessage):
         if message.msg_type == 1:
@@ -103,6 +128,9 @@ class _Handler(blivedm.BaseHandler):
     async def _on_danmaku(self, client: blivedm.BLiveClient, message: blivedm.DanmakuMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) message '
                     f'"{message.msg}"')
+        msg = self.reply_kw(message.msg)
+        if msg:
+            await self.room.send(format_message(message, msg))
 
     async def _on_gift(self, client: blivedm.BLiveClient, message: blivedm.GiftMessage):
         logger.info(f'[{client.room_id}] {message.uid}({message.uname}) gift '
