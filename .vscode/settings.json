@@ -15,6 +15,7 @@
         "util",
         "docker",
         "blivedm",
-        "config"
+        "config",
+        "doc"
     ]
 }
