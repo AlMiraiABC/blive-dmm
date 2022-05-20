@@ -50,6 +50,10 @@
                     "message": {
                         "type": "string",
                         "description": "回复的弹幕\n支持的变量: uid, uname, vip, svip, admin等\n详见``blivedm.models.DanmakuMessage"
+                    },
+                    "notify":{
+                        "$ref": "./notify.json/definitions/on_event",
+                        "description": "触发关键词时发送通知\n需在notify.when.on开启相关配置"
                     }
                 },
                 "required": [

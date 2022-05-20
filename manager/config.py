@@ -10,22 +10,6 @@ class ConfigRoom(TypedDict):
     id: int
 
 
-class ConfigReplyKeywordItem(TypedDict):
-    key: str | list[str]
-    message: str
-
-
-ConfigReplyKeyword = list[ConfigReplyKeywordItem]
-
-
-class ConfigReply(TypedDict):
-    welcome: str
-    gift: str
-    follow: str
-    enable: list[str]
-    keyword: ConfigReplyKeyword
-
-
 class ConfigCredential(TypedDict):
     buvid3: str
     sessdata: str
@@ -74,6 +58,7 @@ class ConfigNotifyHost(TypedDict):
 class ConfigNotifyWhenOn(Enum):
     """Notify events."""
     LIVE_ROOM_CLOSED = 'live_room_closed'
+    KEYWORD = 'keyword'
 
 
 class ConfigNotifyWhenOnEvent(TypedDict):
@@ -91,6 +76,23 @@ class ConfigNotify(TypedDict):
     receiver: list[ConfigNotifyEmail]
     server: ConfigNotifyHost
     when: ConfigNotifyWhen
+
+
+class ConfigReplyKeywordItem(TypedDict):
+    key: str | list[str]
+    message: str
+    nitofy: ConfigNotifyWhenOnEvent
+
+
+ConfigReplyKeyword = list[ConfigReplyKeywordItem]
+
+
+class ConfigReply(TypedDict):
+    welcome: str
+    gift: str
+    follow: str
+    enable: list[str]
+    keyword: ConfigReplyKeyword
 
 
 class ConfigScheduleItem(TypedDict):

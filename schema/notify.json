@@ -92,7 +92,8 @@
                     "items": {
                         "type": "string",
                         "enum": [
-                            "live_room_closed"
+                            "live_room_closed",
+                            "keyword"
                         ]
                     }
                 }
