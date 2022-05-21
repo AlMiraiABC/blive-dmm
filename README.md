@@ -95,7 +95,7 @@ python app.py
 
 ### auto reply / 自动回复
 
-Send danmaku automatically when occured  events.
+Send danmaku automatically when triggerd  events.
 
 发生某些事件时，自动发送指定弹幕。
 
@@ -152,7 +152,7 @@ Send danmaku interval.
 
 ### email notify / 邮件通知
 
-Send email when occured events.
+Send email when triggered events.
 
 发生某些事件时，自动向置顶用户发送通知邮件。
 
