@@ -100,7 +100,7 @@ def get_notify_event_config(event: ConfigNotifyWhenOn, config: ConfigNotify = No
     """
     Get notify.when.<:param:`event`> if :param:`event` in :param:`config`.when.on list.
 
-    :param event: Occured event.
+    :param event: Triggerd event.
     :returns: notify.when.<:param:`event`> if :param:`event` in :param:`config`.when.on list, otherwise None."""
     config = config or (notify.config if notify else None)
     if not config:
@@ -114,7 +114,7 @@ def notify_send(event: ConfigNotifyWhenOn, message: str = None, _notify: Notify 
     """
     Send a notify email if configured.
 
-    :param on: Occured event.
+    :param on: Triggerd event.
     :param message: Content of the notification.
     :param _notify: :class:`Notify` instance.
     :returns: True if the notification sent successfully. Otherwise False.
